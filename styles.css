@@ -1,0 +1,23 @@
+body { margin: 0; padding: 0; font-family: sans-serif; }
+.container { width: 80%; margin: 20px auto; }
+.greeting { text-align: center; margin-top: 100px; }
+a:active { color: red; font-weight: bold; }
+ul { list-style: none; width: 100%; }
+li { float: left; border: 1px solid gray; border-radius: 3%; width: 250px; height: 100px; margin: 5px; display: flex; justify-content: center; align-items: center; }  
+table { width: 150%; }
+.detail { display: flex; align-items: flex-start; }
+.detail th { text-align: left; }
+.detail input { border: 1px solid gray; padding: 10px 32px; margin-top: 10px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; }
+.thumbnail { display: flex; flex-direction: column; align-items: center; margin: 10px 20px}
+.success { display: block; }
+.success p { color: green }
+
+.nav { text-align: right; margin: 20px }
+.nav a { margin-right: 20px; }
+
+
+.form { margin: 0 auto; width: 50%; border-radius: 5px; background-color: #f2f2f2; padding: 20px;} 
+input[type=text], select { width: 100%; padding: 12px 20px; margin: 8px 0; display: inline-block; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+input[type=submit] { width: 100%; background-color: #4CAF50; color: white; padding: 14px 20px; margin: 8px 0; border: none; border-radius: 4px; cursor: pointer; }
+input[type=submit]:hover { background-color: #45a049; }
+.form p { color: red; font-size: 80%; }

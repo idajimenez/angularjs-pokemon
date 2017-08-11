@@ -1,0 +1,210 @@
+
+<html>
+  <head>
+    <script src="https://npmcdn.com/angular@1.6.5/angular.js"></script>
+    <script src="http://unpkg.com/angular-ui-router/release/angular-ui-router.min.js"></script>
+    <script src="https://rawgithub.com/gsklee/ngStorage/master/ngStorage.js"></script>
+
+    <script src="js/pokemon.js"></script>
+    <script src="js/controller/pokemonController.js"></script>
+    <script src="js/factory/berry.js"></script>
+    <script src="js/factory/data.js"></script>
+    <script src="js/service/storage.js"></script>
+    
+    <script src="js/components/login.js"></script>
+    <script src="js/components/signup.js"></script>
+
+    <link rel="stylesheet" href="styles.css">
+  </head>
+
+  <body ng-app="pokemon" ng-controller="controller">
+    <div class="container">
+      <!-- NAVIGATION -->
+      <div class="nav" ng-show="!isLoggedIn">
+        <a href="" ng-click="goTo('Log In')">Log In</a>
+        <a href="" ng-click="goTo('Sign Up')">Sign Up</a>
+      </div>
+      <div class="nav" ng-show="isLoggedIn">
+        <a href="" ng-click="goTo('MyPokemons')">My Pokemons</a>
+        <a href="" ng-click="goTo('AddPokemon')">Add Pokemon</a>
+        <a href="" ng-click="goTo('MyBerries')">My Berries</a>
+        <a href="" ng-click="logout()">Log Out</a>
+      </div>  
+      <!-- END NAVIGATION -->
+      
+      <h3 ng-show="!isLoggedIn && !isShow" class="greeting">Welcome to Pokemon App!</h3>
+      <div ng-show="isLoggedIn" class="dashboard">
+        <h1>Hi {{ toUpperCase(loggedInUser.username) }}</h1>
+        <div ng-show="successMessage" class="success">
+          <p>{{ successMessage }}</p>
+        </div>
+        <div ng-show="isShow == 'MyPokemons'">
+          <h3 ng-show="loggedInUser.pokemons.length == 0">You don't have pokemons yet.</h3>
+          <div ng-show="loggedInUser.pokemons.length > 0 && pokemonDetails == null">
+            <h3>Your pokemons</h3>              
+            <ul>
+              <li ng-repeat="pokemon in loggedInUser.pokemons"> 
+                <a href=""  ng-click="showPokemonDetails(pokemon)">
+                  <img src="{{ pokemon.info.sprites.front_default }}" alt="{{ pokemon.name }}">
+                </a>
+                <div>
+                  <h2>{{ toUpperCase(pokemon.name) }}</h2>
+                  <p>{{ replace(pokemon.info.abilities[0].ability.name, '-') }}</p>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div ng-show="isShow == 'MyBerries'">
+          <h3>My Berries: Total of {{loggedInUser.berryCount}}</h3>
+          <input ng-repeat="berry in berries" type="button" value="{{berry}}" ng-click="updateLoggedInUser(berry, 'berry')">            
+        </div>
+
+        <div ng-show="isShow == 'AddPokemon'"> 
+          <h3>Choose a pokemon</h3>  
+          <div>
+            <ul ng-show="pokemons.length > 0 && pokemonDetails == null">
+              <li ng-repeat="pokemon in pokemons"> 
+                <a href=""  ng-click="showPokemonDetails(pokemon)">
+                  <img src="{{ pokemon.info.sprites.front_default }}" alt="{{ pokemon.name }}">
+                </a>
+                <div>
+                  <h2>{{ toUpperCase(pokemon.name) }}</h2>
+                  <p>{{ replace(pokemon.info.abilities[0].ability.name, '-') }}</p>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+          
+        <div ng-show="pokemonDetails" class="detail">
+          <div class="thumbnail">
+            <h1>{{ toUpperCase(pokemonDetails.name) }}</h1>
+            <img src="{{ pokemonDetails.info.sprites.front_default }}" alt="front_default">
+            <img src="{{ pokemonDetails.info.sprites.back_default }}" alt="back_default">
+          </div>
+          <div>
+            <table>
+              <tr class="item">
+                <th>Abilities:</th>
+                <td>
+                  <tr ng-repeat="ability in pokemonDetails.info.abilities">
+                    <td>{{ replace(ability.ability.name, '-') }}</td>
+                  </tr>
+                </td> 
+              </tr>
+              <tr class="item">
+                <th>Height:</th>
+                <td>{{ pokemonDetails.info.height }}</td>
+              </tr>
+              <tr class="item">
+                <th>Height:</th>
+                <td>{{ pokemonDetails.info.height }}</td>
+              </tr>
+              <tr class="item">
+                <th>Weight:</th>
+                <td>{{ pokemonDetails.info.weight }}</td>
+              </tr>
+              <tr class="item">
+                <th>Base Experience:</th>
+                <td>{{ pokemonDetails.info.base_experience }}</td>
+              </tr>
+              <tr class="item">
+                <th>Stats:</th>
+                <td>
+                  <tr ng-repeat="stats in pokemonDetails.info.stats">
+                    <td>{{ replace(stats.stat.name, '-') }}</td>
+                    <td>{{ stats.base_stat }}</td>
+                  </tr>
+                </td>
+              </tr>
+            </table>
+            <input type="button" value="Go Back" ng-click="reset()">
+            <input type="button" value="Add" ng-show="isShow == 'AddPokemon'" ng-click="updateLoggedInUser(pokemonDetails, 'add')">
+            <input type="button" value="Delete" ng-show="loggedInUser.is_admin && isShow == 'MyPokemons'" ng-click="updateLoggedInUser(pokemonDetails, 'delete')">
+            
+          </div>
+        </div> 
+      </div>
+
+      <!-- LOGIN and SIGNUP page -->
+      <div ng-show="!isLoggedIn && (isShow == 'Log In' || isShow == 'Sign Up')" class="form">
+        <h3>{{ page }}</h3>
+        <p>{{ loginSignupMessage }}</p> 
+        <form>
+          <label for="uname">Username</label>
+          <input type="text" ng-model="username" name="username" placeholder="Your username..">
+
+          <label for="password">Password</label>
+          <input type="text" ng-model="password" name="password" placeholder="Your password..">
+
+          <input type="submit" value="Submit" ng-click="onClickAction()">
+        </form>
+      </div>
+      <!-- END LOGIN and SIGNUP page -->
+      
+
+      <!-- <h4 ng-show="pokemons.length < 10">Fetching Data...</h4>
+
+      <div ng-show="pokemonDetails" class="detail">
+        <div class="thumbnail">
+          <h1>{{ toUpperCase(pokemonDetails.name) }}</h1>
+          <img src="{{ pokemonDetails.info.sprites.front_default }}" alt="front_default">
+          <img src="{{ pokemonDetails.info.sprites.back_default }}" alt="back_default">
+        </div>
+        <div>
+          <table>
+            <tr class="item">
+              <th>Abilities:</th>
+              <td>
+                <tr ng-repeat="ability in pokemonDetails.info.abilities">
+                  <td>{{ replace(ability.ability.name, '-') }}</td>
+                </tr>
+              </td> 
+            </tr>
+            <tr class="item">
+              <th>Height:</th>
+              <td>{{ pokemonDetails.info.height }}</td>
+            </tr>
+            <tr class="item">
+              <th>Height:</th>
+              <td>{{ pokemonDetails.info.height }}</td>
+            </tr>
+            <tr class="item">
+              <th>Weight:</th>
+              <td>{{ pokemonDetails.info.weight }}</td>
+            </tr>
+            <tr class="item">
+              <th>Base Experience:</th>
+              <td>{{ pokemonDetails.info.base_experience }}</td>
+            </tr>
+            <tr class="item">
+              <th>Stats:</th>
+              <td>
+                <tr ng-repeat="stats in pokemonDetails.info.stats">
+                  <td>{{ replace(stats.stat.name, '-') }}</td>
+                  <td>{{ stats.base_stat }}</td>
+                </tr>
+              </td>
+            </tr>
+          </table>
+        <input type="button" value="Reset" ng-click="reset()">
+        </div>
+      </div>
+
+      <ul ng-show="pokemons.length == 10 && pokemonDetails == null">
+        <li ng-repeat="pokemon in pokemons"> 
+          <a href=""  ng-click="showPokemonDetails(pokemon)">
+            <img src="{{ pokemon.info.sprites.front_default }}" alt="{{ pokemon.name }}">
+          </a>
+          <div>
+            <h2>{{ toUpperCase(pokemon.name) }}</h2>
+            <p>{{ replace(pokemon.info.abilities[0].ability.name, '-') }}</p>
+          </div>
+        </li>
+      </ul> -->
+      
+    </div>
+  </body>
+</html>
